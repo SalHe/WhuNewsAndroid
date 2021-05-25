@@ -13,6 +13,9 @@ interface FavoriteNewsDao {
     @Delete
     suspend fun deleteNews(vararg news: News)
 
+    @Update
+    suspend fun updateNews(news: News)
+
     @Query("select * from news")
     fun getNews(): Flow<List<News>>
 

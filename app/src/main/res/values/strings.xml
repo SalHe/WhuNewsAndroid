@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">WhuNews</string>
+    <string name="news_section">新闻</string>
+    <string name="favorite_section">收藏</string>
 </resources>
