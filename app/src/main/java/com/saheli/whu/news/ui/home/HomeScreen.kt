@@ -1,13 +1,18 @@
 package com.saheli.whu.news.ui.home
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -75,7 +80,26 @@ fun HomeScreen(
                 }
             }
         }
-        val favoriteTab = TabContent(Section.Favorite) {
+        val favoriteTab = TabContent(
+            Section.Favorite,
+            tab = {
+                Row {
+                    Text(
+                        text = it,
+                        modifier = Modifier.padding(vertical = 5.dp, horizontal = 5.dp),
+                    )
+                    if (favoriteNewsList.isNotEmpty()) {
+                        Text(
+                            text = favoriteNewsList.size.toString(),
+                            color = Color.White,
+                            modifier = Modifier
+                                .background(MaterialTheme.colors.primary)
+                                .clip(RoundedCornerShape(50))
+                        )
+                    }
+                }
+            }
+        ) {
             LazyColumn {
                 items(favoriteNewsList) { news ->
                     NewsCard(
@@ -107,10 +131,7 @@ fun HomeScreen(
                         selectedContentColor = MaterialTheme.colors.primary,
                         unselectedContentColor = MaterialTheme.colors.onSurface.copy(alpha = 0.8f),
                     ) {
-                        Text(
-                            text = stringResource(id = tabContent.section.title),
-                            modifier = Modifier.padding(vertical = 5.dp),
-                        )
+                        tabContent.tab(stringResource(id = tabContent.section.title))
                     }
                 }
             }
