@@ -10,14 +10,13 @@ import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.glide.rememberGlidePainter
 import com.saheli.whu.news.api.News
 import com.saheli.whu.news.db.DataGenerator
-import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
 fun NewsCard(
@@ -30,14 +29,13 @@ fun NewsCard(
             .fillMaxHeight()
             .padding(16.dp)
     ) {
-        GlideImage(
-            imageModel = news.image,
-            contentScale = ContentScale.Crop,
-            circularRevealedEnabled = true,
+        Image(
+            painter = rememberGlidePainter(news.image),
+            contentDescription = null,
+            contentScale = ContentScale.FillWidth,
             modifier = Modifier
-                .heightIn(min = 180.dp)
-                .fillMaxHeight()
-                .clip(MaterialTheme.shapes.medium)
+                .fillMaxWidth()
+                .heightIn(min = 200.dp)
         )
         Spacer(modifier = Modifier.padding(bottom = 10.dp))
 

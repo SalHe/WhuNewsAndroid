@@ -11,7 +11,9 @@ data class NetEaseResponse<T>(
     val code: Int,
     val message: String,
     val result: T
-)
+) {
+    operator fun invoke(): T = result
+}
 
 @Entity(
     indices = [

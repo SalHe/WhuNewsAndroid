@@ -19,4 +19,10 @@ interface FavoriteNewsDao {
     @Query("select * from news")
     fun getNews(): Flow<List<News>>
 
+    @Query("select * from news where favorite = 1")
+    fun getFavoriteNews(): Flow<List<News>>
+
+    @Query("select * from news where path = :url and title = :title")
+    fun findNews(url: String, title: String): Flow<News?>
+
 }
