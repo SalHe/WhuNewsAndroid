@@ -1,10 +1,7 @@
 package com.saheli.whu.news.ui.home
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
@@ -118,7 +115,13 @@ fun HomeScreen(
                 }
             }
 
-            tabContents[selectedIndex].content()
+            tabContents.forEachIndexed { index, tabContent ->
+                Box(
+                    modifier = if (index == selectedIndex) Modifier else Modifier.height(
+                        0.dp
+                    )
+                ) { tabContent.content() }
+            }
         }
     }
 }
