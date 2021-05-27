@@ -2,4 +2,7 @@
     <string name="app_name">WhuNews</string>
     <string name="news_section">新闻</string>
     <string name="favorite_section">收藏</string>
+    <string name="username">帐号</string>
+    <string name="password">密码</string>
+    <string name="please_enter_right_username_password">请输入正确的帐号密码</string>
 </resources>

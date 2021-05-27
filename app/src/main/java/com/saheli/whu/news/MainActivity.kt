@@ -1,5 +1,6 @@
 package com.saheli.whu.news
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -44,7 +45,10 @@ class MainActivity : ComponentActivity(), CoroutineScope {
             .build()
             .create(NewsService::class.java)
 
-        val appContainer: AppContainer = AppContainerImpl(newsService, appDatabase)
+        val sharedPreferences = getSharedPreferences("login-details", MODE_PRIVATE)
+
+        val appContainer: AppContainer =
+            AppContainerImpl(newsService, appDatabase, sharedPreferences)
 
         setContent {
             WhuNewsApp(appContainer)
