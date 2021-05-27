@@ -18,6 +18,7 @@ import com.google.accompanist.glide.rememberGlidePainter
 import com.saheli.whu.news.api.News
 import com.saheli.whu.news.db.DataGenerator
 
+// TODO 添加打开浏览页面功能
 @Composable
 fun NewsCard(
     news: News,
