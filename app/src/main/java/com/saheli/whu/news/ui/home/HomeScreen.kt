@@ -46,17 +46,6 @@ fun HomeScreen(
         scaffoldState = scaffoldState
     ) {
 
-        // 如果把状态放到TabContent中话，
-        // 状态的生命周期就跟TabContent一样
-        // 当切换tab的时候状态会丢失
-        var currentPage by rememberSaveable { mutableStateOf(1) }
-        val (result, onRefresh) = produceRefreshableState(appContainer) {
-            val netEaseNewsResponse = newsService.getNetEaseNews(currentPage++)
-            netEaseNewsResponse()
-        }
-        val favoriteNewsList by appContainer.appDatabase.favoriteNewsDao().getFavoriteNews()
-            .collectAsState(listOf())
-
         // 当前TAB的选中项以及切换TAB的函数
         val (selectedIndex, updateIndex) = rememberSaveable { mutableStateOf(0) }
 
@@ -67,6 +56,11 @@ fun HomeScreen(
         }
 
         val newsTab = TabContent(Section.News) {
+            var currentPage by rememberSaveable { mutableStateOf(1) }
+            val (result, onRefresh) = produceRefreshableState(appContainer) {
+                val netEaseNewsResponse = newsService.getNetEaseNews(currentPage++)
+                netEaseNewsResponse()
+            }
             SwipeRefresh(
                 state = rememberSwipeRefreshState(isRefreshing = result.value.loading),
                 onRefresh = onRefresh
@@ -102,6 +96,8 @@ fun HomeScreen(
             }
         }
 
+        val favoriteNewsList by appContainer.appDatabase.favoriteNewsDao().getFavoriteNews()
+            .collectAsState(listOf())
         val favoriteTab = TabContent(
             Section.Favorite,
             tab = {
@@ -157,6 +153,7 @@ fun HomeScreen(
             }
 
         }
+
         val explorer = TabContent(Section.Explorer) {
             AndroidView(factory = { context ->
                 WebView(context).apply {
