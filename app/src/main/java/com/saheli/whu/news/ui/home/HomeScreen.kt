@@ -1,5 +1,8 @@
 package com.saheli.whu.news.ui.home
 
+import android.view.ViewGroup
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -15,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.saheli.whu.news.AppContainer
@@ -30,6 +34,8 @@ fun HomeScreen(
     val scaffoldState = rememberScaffoldState()
     val coroutineScope = rememberCoroutineScope()
 
+    var currentUrl by rememberSaveable { mutableStateOf("http://salheli.com") }
+
     Scaffold(
         scaffoldState = scaffoldState
     ) {
@@ -44,6 +50,15 @@ fun HomeScreen(
         }
         val favoriteNewsList by appContainer.appDatabase.favoriteNewsDao().getFavoriteNews()
             .collectAsState(listOf())
+
+        // 当前TAB的选中项以及切换TAB的函数
+        val (selectedIndex, updateIndex) = rememberSaveable { mutableStateOf(0) }
+
+        // 通用的浏览网页调用
+        val exploreUrl = { url: String ->
+            currentUrl = url
+            updateIndex(2)
+        }
 
         val newsTab = TabContent(Section.News) {
             SwipeRefresh(
@@ -62,7 +77,7 @@ fun HomeScreen(
                             ).collectAsState(initial = it)
                             NewsCard(
                                 news = news ?: it,
-                                modifier = Modifier.clickable {}
+                                modifier = Modifier.clickable { exploreUrl((news ?: it).path) }
                             ) { isFavorite ->
                                 // news = news.copy(favorite = isFavorite)
                                 coroutineScope.launch {
@@ -106,7 +121,7 @@ fun HomeScreen(
                 items(favoriteNewsList) { news ->
                     NewsCard(
                         news = news,
-                        modifier = Modifier.clickable {}
+                        modifier = Modifier.clickable { exploreUrl(news.path) }
                     ) { isFavorite ->
                         coroutineScope.launch {
                             appContainer.appDatabase.favoriteNewsDao()
@@ -116,8 +131,30 @@ fun HomeScreen(
                 }
             }
         }
-        val tabContents = listOf(newsTab, favoriteTab)
-        val (selectedIndex, updateIndex) = rememberSaveable { mutableStateOf(0) }
+        val explorer = TabContent(Section.Explorer) {
+            AndroidView(factory = { context ->
+                WebView(context).apply {
+                    layoutParams = ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT
+                    )
+                    settings.javaScriptEnabled = true
+                    webViewClient = object : WebViewClient() {
+                        override fun shouldOverrideUrlLoading(
+                            view: WebView?,
+                            url: String?
+                        ): Boolean {
+                            // return super.shouldOverrideUrlLoading(view, url)
+                            view?.loadUrl(url ?: "http://salheli.com")
+                            return true
+                        }
+                    }
+                }
+            }) {
+                it.loadUrl(currentUrl)
+            }
+        }
+        val tabContents = listOf(newsTab, favoriteTab, explorer)
 
         Column {
 
