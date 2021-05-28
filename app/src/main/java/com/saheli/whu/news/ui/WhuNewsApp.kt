@@ -44,6 +44,9 @@ fun WhuNewsApp(
 
         val please_enter_right_username_password =
             stringResource(id = R.string.please_enter_right_username_password)
+        val login_success =
+            stringResource(id = R.string.login_success)
+
 
         // TODO 效果需要调整一下，不过先实现再说
         AnimatedVisibility(
@@ -64,6 +67,9 @@ fun WhuNewsApp(
                         appContainer.sharedPreferences.edit {
                             putString(KEY_USERNAME, username)
                             putString(KEY_PASSWORD, password)
+                        }
+                        coroutineScope.launch {
+                            snackbarHostState.showSnackbar(login_success)
                         }
                         hasLogin = true
                     }

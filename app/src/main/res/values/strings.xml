@@ -7,4 +7,5 @@
     <string name="password">密码</string>
     <string name="query">搜索……</string>
     <string name="please_enter_right_username_password">请输入正确的帐号密码</string>
+    <string name="login_success">登录成功！</string>
 </resources>
