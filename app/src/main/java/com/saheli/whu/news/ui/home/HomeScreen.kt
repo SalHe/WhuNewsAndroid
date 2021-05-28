@@ -9,23 +9,29 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.saheli.whu.news.AppContainer
+import com.saheli.whu.news.R
 import com.saheli.whu.news.utils.produceRefreshableState
 import kotlinx.coroutines.launch
 
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun HomeScreen(
     appContainer: AppContainer
@@ -117,19 +123,40 @@ fun HomeScreen(
                 }
             }
         ) {
-            LazyColumn {
-                items(favoriteNewsList) { news ->
-                    NewsCard(
-                        news = news,
-                        modifier = Modifier.clickable { exploreUrl(news.path) }
-                    ) { isFavorite ->
-                        coroutineScope.launch {
-                            appContainer.appDatabase.favoriteNewsDao()
-                                .updateNews(news.copy(favorite = isFavorite))
+            var queryContent by rememberSaveable { mutableStateOf("") }
+            Column {
+                Row {
+                    val keyboardController = LocalSoftwareKeyboardController.current
+
+                    TextField(
+                        value = queryContent,
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
+                        onValueChange = { queryContent = it },
+                        keyboardActions = KeyboardActions(onSearch = { keyboardController?.hide() }),
+                        label = { Text(stringResource(id = R.string.query)) },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
+                LazyColumn {
+                    items(favoriteNewsList.filter {
+                        queryContent.isBlank()
+                                || it.title.contains(queryContent)
+                    }) { news ->
+                        NewsCard(
+                            news = news,
+                            modifier = Modifier.clickable { exploreUrl(news.path) }
+                        ) { isFavorite ->
+                            coroutineScope.launch {
+                                appContainer.appDatabase.favoriteNewsDao()
+                                    .updateNews(news.copy(favorite = isFavorite))
+                            }
                         }
                     }
                 }
             }
+
         }
         val explorer = TabContent(Section.Explorer) {
             AndroidView(factory = { context ->
