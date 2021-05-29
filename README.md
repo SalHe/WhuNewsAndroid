@@ -6,7 +6,7 @@
 
 由于私人信息保密问题，不在本代码库中包含任何个人信息。
 
-学生信息存放于[](local.properties)文件之中，请在文件中加入：
+学生信息存放于[local.properties](local.properties)文件之中，请在文件中加入：
 
 - studentName=学生姓名
 - studentNumber=学生学号
